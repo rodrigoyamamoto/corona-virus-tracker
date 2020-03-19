@@ -22,13 +22,21 @@ public class CoronaVirusDataService {
 
     private static String VIRUS_DATA_URL = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Confirmed.csv";
 
-    private List<LocationStats> allStats = new ArrayList<>();
+    public List<LocationStats> getAllStats() {
+        return allStats;
+    }
 
-    // Using Java 11
+    private List<LocationStats> allStats = new ArrayList<>();
+    private List<LocationStats> newStats = new ArrayList<>();
+
     @PostConstruct
-    @Scheduled(cron = "* * * 1 * *") // the pattern should be: s m h d m y
+    @Scheduled(cron = "* 1 * * * *")
+    /***
+     * The pattern of cron should be:
+     * second, minute, hour, day of month, month, day of week
+     */
     public void fetchVirusData() throws IOException, InterruptedException {
-        List<LocationStats> newStats = new ArrayList<>();
+        // Using Java 11
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(VIRUS_DATA_URL))
@@ -42,8 +50,7 @@ public class CoronaVirusDataService {
             LocationStats locationStat = new LocationStats();
             locationStat.setState(record.get("Province/State"));
             locationStat.setCountry(record.get("Country/Region"));
-            locationStat.setLatestTotalCases(record.get(record.size() - 1));
-            System.out.println(locationStat);
+            locationStat.setLatestTotalCases(record.get(record.size() - 1).equals("") ? 0 : Integer.parseInt(record.get(record.size() - 1)));
             newStats.add(locationStat);
         }
 
