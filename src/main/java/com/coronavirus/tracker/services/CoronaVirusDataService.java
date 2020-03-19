@@ -26,7 +26,7 @@ public class CoronaVirusDataService {
 
     // Using Java 11
     @PostConstruct
-    @Scheduled(cron = "* * 1 * * *") // the pattern should be: s m h d m y
+    @Scheduled(cron = "* * * 1 * *") // the pattern should be: s m h d m y
     public void fetchVirusData() throws IOException, InterruptedException {
         List<LocationStats> newStats = new ArrayList<>();
         HttpClient client = HttpClient.newHttpClient();
